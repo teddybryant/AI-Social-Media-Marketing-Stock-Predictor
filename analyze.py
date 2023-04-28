@@ -76,8 +76,8 @@ def analyze(file1,file2):
 
 
     # create a line plot of the data
-    merged_df.plot(x='Date', y=['percent_likes_dev','percent_comments_dev','Change_Price','Change_Volume'])
-    plt.show()
+    #merged_df.plot(x='Date', y=['percent_likes_dev','percent_comments_dev','Change_Price','Change_Volume'])
+    #plt.show()
 
   
 
