@@ -7,14 +7,32 @@ import pandas as pd
 import time
 start_time = time.time()
 #%%
-# our data
+# gopro data
 gopro = pd.read_csv('Clean_Final/gopro_final_data.csv')
 gopro_x = gopro.drop(['week','highChange (above 6% change)', 'aboveAvgVol'], axis=1).values
 # print(gopro_x)
 gopro_y1 = gopro['highChange (above 6% change)'].values
+gopro_y2 = gopro['aboveAvgVol'].values
 
 # split data into train and test
 gopro_x_train, gopro_x_test, gopro_y1_train, gopro_y1_test = train_test_split(gopro_x, gopro_y1, test_size=0.2, random_state=42)
+gopro_x_train, gopro_x_test, gopro_y2_train, gopro_y2_test = train_test_split(gopro_x, gopro_y2, test_size=0.2, random_state=42)
+
+#nintendo data
+nintendo = pd.read_csv('Clean_Final/nintendo_final_data.csv')
+nintendo_x = nintendo.drop(['week','highChange (above 6% change)', 'aboveAvgVol'], axis=1).values
+nintendo_y1 = nintendo['highChange (above 6% change)'].values
+nintendo_y2 = nintendo['aboveAvgVol'].values
+nintendo_x_train, nintendo_x_test, nintendo_y1_train, nintendo_y1_test = train_test_split(nintendo_x, nintendo_y1, test_size=0.2, random_state=42)
+nintendo_x_train, nintendo_x_test, nintendo_y2_train, nintendo_y2_test = train_test_split(nintendo_x, nintendo_y2, test_size=0.2, random_state=42)
+
+#TESLA data
+tesla = pd.read_csv('Clean_Final/tesla_final_data.csv')
+tesla_x = tesla.drop(['week','highChange (above 6% change)', 'aboveAvgVol'], axis=1).values
+tesla_y1 = tesla['highChange (above 6% change)'].values
+tesla_y2 = tesla['aboveAvgVol'].values
+tesla_x_train, tesla_x_test, tesla_y1_train, tesla_y1_test = train_test_split(tesla_x, tesla_y1, test_size=0.2, random_state=42)
+tesla_x_train, tesla_x_test, tesla_y1_train, tesla_y1_test = train_test_split(tesla_x, tesla_y2, test_size=0.2, random_state=42)
 #%%
 class Data(Dataset):
     def __init__(self, X_train, y_train):
