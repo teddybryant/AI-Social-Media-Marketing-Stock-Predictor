@@ -32,7 +32,7 @@ tesla_x = tesla.drop(['week','highChange (above 6% change)', 'aboveAvgVol'], axi
 tesla_y1 = tesla['highChange (above 6% change)'].values
 tesla_y2 = tesla['aboveAvgVol'].values
 tesla_x_train, tesla_x_test, tesla_y1_train, tesla_y1_test = train_test_split(tesla_x, tesla_y1, test_size=0.2, random_state=42)
-tesla_x_train, tesla_x_test, tesla_y1_train, tesla_y1_test = train_test_split(tesla_x, tesla_y2, test_size=0.2, random_state=42)
+tesla_x_train, tesla_x_test, tesla_y2_train, tesla_y2_test = train_test_split(tesla_x, tesla_y2, test_size=0.2, random_state=42)
 #%%
 class Data(Dataset):
     def __init__(self, X_train, y_train):
@@ -54,18 +54,27 @@ class Data(Dataset):
 
 
 # our data
-gopro_train = Data(gopro_x_train, gopro_y1_train)
+gopro_train_1 = Data(gopro_x_train, gopro_y1_train)
 batch_size = 4
-gopro_loader = DataLoader(gopro_train, batch_size=batch_size,
+gopro_loader_1 = DataLoader(gopro_train_1, batch_size=batch_size,
                          shuffle=True)
+tesla_train_1 = Data(tesla_x_train, tesla_y1_train)
+tesla_loader_1 = DataLoader(tesla_train_1, batch_size=batch_size, shuffle=True)
+tesla_train_2 = Data(tesla_x_train, tesla_y2_train)
+tesla_loader_2 = DataLoader(tesla_train_2, batch_size=batch_size, shuffle=True)
+
+nintendo_train1 = Data(nintendo_x_train, nintendo_y1_train)
+nintendo_loader1 = DataLoader(nintendo_train1, batch_size=batch_size, shuffle=True)
+nintendo_train2 = Data(nintendo_x_train, nintendo_y2_train)
+nintendo_loader2 = DataLoader(nintendo_train2, batch_size=batch_size, shuffle=True)
 #%%
 import torch.nn as nn
 # number of features (len of X cols)
-input_dim = 22
+input_dim = 14
 # number of hidden layers
 hidden_layers = 25
 # number of classes (unique of y)
-output_dim = 3
+output_dim = 2
 class Network(nn.Module):
   def __init__(self):
     super(Network, self).__init__()
@@ -85,7 +94,7 @@ optimizer = torch.optim.SGD(clf.parameters(), lr=0.001)
 epoch = 2
 for epoch in range(epoch):
     running_loss = 0
-    for i, data in enumerate(gopro_loader, 0):
+    for i, data in enumerate(nintendo_loader2, 0):
         inputs, labels = data
         # set optimizer to zero grad to remove previous epoch gradients
         optimizer.zero_grad()
@@ -100,23 +109,33 @@ for epoch in range(epoch):
     # display statistics
     print(f'[{epoch+ 1}, {i + 1:5d}] loss: {running_loss/ 2000:.5f}')
 #%%
-path = './gopro_model1.path'
-torch.save(clf.state_dict(), path)
+gopro_path = './gopro_model1.path'
+tesla_path = './tesla_model1.path'
+nintendo_path = './nintendo_model.path'
+torch.save(clf.state_dict(), tesla_path)
 #%%
 # test model
 model = Network()
-model.load_state_dict(torch.load(path))
+model.load_state_dict(torch.load(tesla_path))
 
 # test data
 gopro_test = Data(gopro_x_test, gopro_y1_test)
 gopro_test_loader = DataLoader(gopro_test, batch_size=batch_size,
                         shuffle=True)
+tesla_test1 = Data(tesla_x_test, tesla_y1_test)
+tesla_test_loader1 = DataLoader(tesla_test1, batch_size=batch_size, shuffle=True)
+tesla_test2 = Data(tesla_x_test, tesla_y2_test)
+tesla_test_loader2 = DataLoader(tesla_test2, batch_size=batch_size, shuffle=True)
 
+nintendo_test1 = Data(nintendo_x_test, nintendo_y1_test)
+nintendo_test_loader1 = DataLoader(nintendo_test1, batch_size=batch_size, shuffle=True)
+nintendo_test2 = Data(nintendo_x_test, nintendo_y2_test)
+nintendo_test_loader2 = DataLoader(nintendo_test2, batch_size=batch_size, shuffle=True)
 # test
 correct, total = 0, 0
 # no need to calculate gradients during inference
 with torch.no_grad():
-  for data in gopro_test_loader:
+  for data in nintendo_test_loader2:
     inputs, labels = data
     # calculate output by running through the network
     outputs = model(inputs)
@@ -126,6 +145,6 @@ with torch.no_grad():
     # update results
     total += labels.size(0)
     correct += (predicted == labels).sum().item()
-print(f'Accuracy of the network on the {len(gopro_test)} test data: {100 * correct // total} %')
+print(f'Accuracy of the network on the {len(nintendo_test2)} test data: {100 * correct // total} %')
 end_time = time.time()
 print("Execution time: {:.2f} seconds".format(end_time - start_time))
