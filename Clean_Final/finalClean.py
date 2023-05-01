@@ -48,7 +48,7 @@ def CleanInstagram(instagram_data):
 
     return insta_wkly_data
 
-def cleanStock(stock_data):
+def CleanStock(stock_data):
     #reading in the data into a pandas df
     stock = pd.read_csv(stock_data)
 
@@ -187,7 +187,7 @@ def TikTokClean(file):
 def main():
     start_time = time.time()
     nintendo_insta_df = CleanInstagram('nintendo_instagram.csv')
-    nintendo_cleaned_stock = cleanStock('nintendo_stock.csv')
+    nintendo_cleaned_stock = CleanStock('nintendo_stock.csv')
     nintendo_twitter_df = TwitterClean('Twitter_Nintendo.csv')
 
     nintendo_final_df = nintendo_twitter_df.merge(nintendo_insta_df,on='week').merge(nintendo_cleaned_stock, on='week')
@@ -195,7 +195,7 @@ def main():
     nintendo_final_df.to_csv('nintendo_final_data.csv', index=False)
 
     tesla_insta_df = CleanInstagram('tesla_instagram.csv')
-    tesla_cleaned_stock = cleanStock('tesla_stock.csv')
+    tesla_cleaned_stock = CleanStock('tesla_stock.csv')
     tesla_twitter_df = TwitterClean('Twitter_TeslaElon.csv')
 
     tesla_final_df = tesla_twitter_df.merge(tesla_insta_df,on='week').merge(tesla_cleaned_stock, on='week')
@@ -204,11 +204,11 @@ def main():
 
 
     gopro_insta_df = CleanInstagram('gopro_instagram.csv')
-    gopro_cleaned_stock = cleanStock('tesla_stock.csv')
+    gopro_cleaned_stock = CleanStock('tesla_stock.csv')
     gopro_twitter_df = TwitterClean('Twitter_GoPro.csv')
     gopro_tiktok_df = TikTokClean('GoPro_TikTok_Data.csv')
 
-    gopro_final_df = gopro_twitter_df.merge(gopro_insta_df,on='week').merge(gopro_tiktok_df, on='week').merge(tesla_cleaned_stock, on='week')
+    gopro_final_df = gopro_twitter_df.merge(gopro_insta_df,on='week').merge(gopro_tiktok_df, on='week').merge(gopro_cleaned_stock, on='week')
     print(gopro_final_df)
     gopro_final_df.to_csv('gopro_final_data.csv', index=False)
 
