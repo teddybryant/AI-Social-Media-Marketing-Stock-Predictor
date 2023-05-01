@@ -8,7 +8,7 @@ import time
 start_time = time.time()
 #%%
 # gopro data
-gopro = pd.read_csv('Clean_Final/gopro_final_data.csv')
+gopro = pd.read_csv('gopro_final_just_instagram_data.csv')
 gopro_x = gopro.drop(['week','highChange (above 6% change)', 'aboveAvgVol'], axis=1).values
 # print(gopro_x)
 gopro_y1 = gopro['highChange (above 6% change)'].values
@@ -58,6 +58,8 @@ gopro_train_1 = Data(gopro_x_train, gopro_y1_train)
 batch_size = 4
 gopro_loader_1 = DataLoader(gopro_train_1, batch_size=batch_size,
                          shuffle=True)
+gopro_train2 = Data(gopro_x_train, gopro_y2_train)
+gopro_loader2 = DataLoader(gopro_train2, batch_size=batch_size, shuffle=True)
 tesla_train_1 = Data(tesla_x_train, tesla_y1_train)
 tesla_loader_1 = DataLoader(tesla_train_1, batch_size=batch_size, shuffle=True)
 tesla_train_2 = Data(tesla_x_train, tesla_y2_train)
@@ -70,7 +72,7 @@ nintendo_loader2 = DataLoader(nintendo_train2, batch_size=batch_size, shuffle=Tr
 #%%
 import torch.nn as nn
 # number of features (len of X cols)
-input_dim = 14
+input_dim = 4
 # number of hidden layers
 hidden_layers = 25
 # number of classes (unique of y)
@@ -94,7 +96,7 @@ optimizer = torch.optim.SGD(clf.parameters(), lr=0.001)
 epoch = 2
 for epoch in range(epoch):
     running_loss = 0
-    for i, data in enumerate(nintendo_loader2, 0):
+    for i, data in enumerate(gopro_loader_1, 0):
         inputs, labels = data
         # set optimizer to zero grad to remove previous epoch gradients
         optimizer.zero_grad()
@@ -119,9 +121,11 @@ model = Network()
 model.load_state_dict(torch.load(tesla_path))
 
 # test data
-gopro_test = Data(gopro_x_test, gopro_y1_test)
-gopro_test_loader = DataLoader(gopro_test, batch_size=batch_size,
+gopro_test1 = Data(gopro_x_test, gopro_y1_test)
+gopro_test_loader1 = DataLoader(gopro_test1, batch_size=batch_size,
                         shuffle=True)
+gopro_test2 = Data(gopro_x_test, gopro_y2_test)
+gopro_test_loader2 = DataLoader(gopro_test2, batch_size=batch_size, shuffle=True)
 tesla_test1 = Data(tesla_x_test, tesla_y1_test)
 tesla_test_loader1 = DataLoader(tesla_test1, batch_size=batch_size, shuffle=True)
 tesla_test2 = Data(tesla_x_test, tesla_y2_test)
@@ -135,7 +139,7 @@ nintendo_test_loader2 = DataLoader(nintendo_test2, batch_size=batch_size, shuffl
 correct, total = 0, 0
 # no need to calculate gradients during inference
 with torch.no_grad():
-  for data in nintendo_test_loader2:
+  for data in gopro_test_loader1:
     inputs, labels = data
     # calculate output by running through the network
     outputs = model(inputs)
@@ -145,6 +149,6 @@ with torch.no_grad():
     # update results
     total += labels.size(0)
     correct += (predicted == labels).sum().item()
-print(f'Accuracy of the network on the {len(nintendo_test2)} test data: {100 * correct // total} %')
+print(f'Accuracy of the network on the {len(nintendo_test1)} test data: {100 * correct // total} %')
 end_time = time.time()
 print("Execution time: {:.2f} seconds".format(end_time - start_time))
